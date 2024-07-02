@@ -61,9 +61,23 @@ function M.replaceHex2Ascii()
   end
   M.replaceWord(selected_text, converted_text)
 end
-
+function M.get_file_path_under_cursor()
+  -- Runs until it finds the open and close quotes
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local start_col = col
+  while start_col > 0 and line:sub(start_col, start_col) ~= '"' do
+    start_col = start_col - 1
+  end
+  local end_col = col
+  while end_col <= #line and line:sub(end_col + 1, end_col + 1) ~= '"' do
+    end_col = end_col + 1
+  end
+  local file_path = line:sub(start_col + 1, end_col)
+  return file_path, start_col, end_col
+end
 function M.replaceAscii2Hex()
-  local selected_text = M.get_word_under_cursor()
+  local selected_text = M.get_file_path_under_cursor()
   local converted_text = M.ascii_to_hex(selected_text)
   print(selected_text .. "->" .. converted_text)
   -- check if converted text is not empty
@@ -77,7 +91,20 @@ function M.replaceWord(selectedText, replaceText)
   local bfnr = vim.api.nvim_get_current_buf()
   local cursor = vim.api.nvim_win_get_cursor(0)
   local line = vim.api.nvim_get_current_line()
-  local newline = line:gsub(selectedText, replaceText)
+  -- only replace the occurance under the cursor
+  newline = line
+  for i = 1, #line do
+    local start_col = line:find(selectedText, i)
+    if start_col == nil then
+      break
+    end
+    local end_col = start_col + #selectedText
+    if start_col <= cursor[2] and cursor[2] <= end_col then -- if the cursor is in the selected text
+      newline = line:sub(1, start_col - 1) .. replaceText .. line:sub(end_col)
+      break
+    end
+  end
+
   vim.api.nvim_buf_set_lines(bfnr, cursor[1] - 1, cursor[1], false, { newline })
 end
 
