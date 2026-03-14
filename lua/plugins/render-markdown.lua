@@ -1,7 +1,7 @@
 -- Markdown rendering in Neovim
 return {
   "MeanderingProgrammer/render-markdown.nvim",
-  ft = { "markdown", "Avante" },
+  ft = { "markdown" },
   opts = {
     file_types = { "markdown", "Avante" },
     -- Render markdown automatically when opening .md files
