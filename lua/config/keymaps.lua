@@ -6,6 +6,10 @@ vim.api.nvim_set_keymap("n", "<Tab>", ":bnext<CR>", { noremap = true, silent = t
 --set shift tab to go to next window (split)
 vim.api.nvim_set_keymap("n", "<S-Tab>", ":wincmd w<CR>", { noremap = true, silent = true })
 
+-- gb: jump "back" in the jumplist (counterpart to gd / go-to-definition).
+-- gd uses the jumplist, so <C-o> returns to where you were; <C-i>/<Tab> goes forward.
+vim.keymap.set("n", "gb", "<C-o>", { desc = "Go back (jumplist)", noremap = true, silent = true })
+
 vim.api.nvim_create_user_command("OpenInPreview", function()
   vim.cmd("silent !open -a Preview.app " .. vim.fn.shellescape(vim.fn.expand("%:p")))
 end, {})
